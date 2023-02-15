@@ -1,7 +1,7 @@
 name: Angular-app-pipeline
 on:
   push:
-     branches: [ "test" ]
+     branches: [ "master" ]
 env:
   s3-bucket: "ajay-mern-setup-artifact-code-deploy"
 jobs:
