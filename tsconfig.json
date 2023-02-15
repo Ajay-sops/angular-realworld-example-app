@@ -2,7 +2,6 @@
   "compileOnSave": false,
   "compilerOptions": {
     "importHelpers": true,
-    "enableIvy": true,
     "downlevelIteration": true,
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
@@ -19,5 +18,8 @@
       "es2017",
       "dom"
     ]
+  },
+  "angularCompilerOptions": {
+    "enableIvy": true
   }
 }
