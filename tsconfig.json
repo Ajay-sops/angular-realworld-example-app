@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "importHelpers": true,
-    "enableIvy": true
+    "enableIvy": false,
     "downlevelIteration": true,
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
