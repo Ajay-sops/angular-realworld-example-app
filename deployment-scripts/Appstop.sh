@@ -1,5 +1,6 @@
 #!/bin/bash
 # pm2 stopall
+apt-get install jq -y
 echo "Running pm2 processes here ======>"
 process=`pm2 jlist|jq 'length'`
 echo "Running pm2 processes ======> " $process
