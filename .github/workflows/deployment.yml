@@ -1,0 +1,59 @@
+name: Angular-app-pipeline
+on:
+  push:
+     branches:
+env:
+  s3-bucket: "ajay-mern-setup-artifact-code-deploy"
+jobs:
+    build:
+      name: Build 
+      runs-on: ubuntu-20.04
+      strategy:
+        matrix:
+          node-version: ['16.x']
+      steps:
+        - name: Checking out the latest code
+          uses: actions/checkout@v3
+        - name: Setup 16.x node environment
+          uses: actions/setup-node@v3
+          with:
+            node-version: ${{ matrix.node-version }}
+        - name: Installing dependencies
+          run: |
+            yarn install
+            find ./node_modules -mtime +10950 -exec touch {} \; 
+        - name: Installing AWS CLI 2
+          run: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install --update
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v1
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ secrets.AWS_REGION}}
+        - name: Pushing the artifact to s3 bucket
+          run: |
+              artifact_location=s3://${{ env.s3-bucket }}/artifact-$GITHUB_RUN_ID.zip
+              echo $artifact_location
+              aws deploy push \
+                --application-name ajay-mern-app \
+                --description "This is a revision for the ajay-mern-app-${{ github.sha }}" \
+                --s3-location $artifact_location \
+                --source .
+                
+        - name: AWS Create Deployment
+          run: |
+            artifact_key=artifact-$GITHUB_RUN_ID.zip
+            aws deploy create-deployment \
+                  --application-name ajay-mern-app \
+                  --deployment-config-name CodeDeployDefault.OneAtATime \
+                  --deployment-group-name ajay-mern-dg \
+                  --file-exists-behavior OVERWRITE \
+                  --s3-location bucket=${{ env.s3-bucket }},key=$artifact_key,bundleType=zip  >> output.json
+        - name: Deployment Status
+          run: | 
+            sudo apt install jq -y
+            echo "You can check the deployment status using deployment Id  $(cat output.json |  jq '.deploymentId?' -r ) "
+          # aws deploy wait deployment-successful --deployment-id $(cat output.json |  jq '.deploymentId?' -r )  
