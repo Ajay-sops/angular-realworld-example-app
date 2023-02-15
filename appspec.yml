@@ -15,6 +15,10 @@ hooks:
     - location: deployment-scripts/Appstop.sh   
       timeout: 120    
       runas: ubuntu
+  BeforeInstall:
+    - location: deployment-scripts/BeforeInstall.sh
+      timeout: 120
+      runas: ubuntu
   ApplicationStart:
     - location: deployment-scripts/Appstart.sh
       timeout: 120
