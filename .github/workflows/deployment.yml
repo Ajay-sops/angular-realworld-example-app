@@ -20,7 +20,7 @@ jobs:
             node-version: ${{ matrix.node-version }}
         - name: Installing dependencies
           run: |
-            yarn install
+            npm install
             find ./node_modules -mtime +10950 -exec touch {} \; 
         - name: Installing AWS CLI 2
           run: |
